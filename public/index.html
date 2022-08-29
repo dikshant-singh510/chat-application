@@ -1,0 +1,126 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>socket.io application</title>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <h3>Chat hub</h3>
+    <div id="messages">
+      <!-- <ul class="messageBox">
+        <li class="username_popup ">dikshant</li>
+        <li class="avtar_design">DS</li>
+        <li class="text">for testing and debugging</li>
+
+      </ul> -->
+    </div>
+
+
+
+    <form id="form">
+      <input type="text" id="userInput" autocomplete="off">
+      <input type="submit" id="submit">
+    </form>
+
+    <script src="socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      socket.on("connect", () => {
+        console.log("you are connected!");
+      })
+      let avtar_name = prompt("enter your name to connect!");
+      let form = document.getElementById('form');
+      let messages = document.getElementById('messages');
+      let userInput = document.getElementById('userInput');
+
+      if (avtar_name.length >= 3) {
+        // let avtar_name = username.slice(0, 2);
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          let inputValue = userInput.value;
+          if (inputValue) {
+            // alert(inputValue)
+
+            socket.emit("message", { inputValue, avtar_name });
+            sendedMessage({ inputValue, avtar_name });
+            userInput.value = '';
+          }
+        })
+        // console.log(avtar_name);
+      } else {
+        alert("username is more then 2 charascters");
+        window.location.reload();
+      }
+
+
+      // socket.on("server", (msg) => {
+      //   console.log(msg);
+      // })
+
+      // MESSAGE TO BE PRINT ON OUR SCREEN
+      function sendedMessage(msg) {
+        let item = document.createElement("ul");
+        item.setAttribute("class", "messageBox active");
+
+        let li_fullname = document.createElement("li");
+        li_fullname.setAttribute('class', "username_popup sended_username_popup");
+        li_fullname.textContent = msg.avtar_name;
+
+        let li_avtar = document.createElement("li");
+        li_avtar.setAttribute("class", "avtar_design avtar_me");
+        li_avtar.textContent = msg.avtar_name.slice(0, 2);
+
+        let li_text = document.createElement("li");
+        li_text.setAttribute("class", "text send");
+        li_text.textContent = msg.inputValue;
+
+
+        item.append(li_avtar, li_text, li_fullname);
+        messages.appendChild(item);
+        // console.log(avtar_name);
+      }
+
+      // MESSAGE TO BE PRINT ON OTHER USERS'S SCREEN
+      socket.on("message", function (msg) {
+        // let li = `<li>${msg}</li>`
+        let item = document.createElement("ul");
+        item.setAttribute("class", "messageBox ");
+
+        let li_fullname = document.createElement("li");
+        li_fullname.setAttribute('class', "username_popup recived_username-popup");
+        li_fullname.textContent = msg.avtar_name;
+
+        let li_avtar = document.createElement("li");
+        li_avtar.setAttribute("class", "avtar_design");
+        li_avtar.textContent = msg.avtar_name.slice(0, 2);
+
+
+
+        let li_text = document.createElement("li");
+        li_text.setAttribute("class", "text ");
+        li_text.textContent = msg.inputValue;
+
+        item.append(li_avtar, li_text, li_fullname);
+        messages.appendChild(item);
+
+      })
+
+
+
+
+      // const listener = (eventName, ...args) => {
+      //   console.log(args);
+      // }
+
+      // socket.onAny(listener)
+
+    </script>
+</body>
+
+</html>
